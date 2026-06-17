@@ -1,0 +1,40 @@
+name: Build MotionCam APK
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Install LLVM Compiler
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y llvm clang build-essential
+
+      - name: Run MotionCam Setup
+        run: |
+          export ANDROID_NDK=$ANDROID_NDK_HOME
+          export LLVM_DIR=/usr
+          chmod +x ./setup.sh
+          ./setup.sh
+
+      - name: Build APK with Gradle
+        run: |
+          cd MotionCam-Android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Upload Application APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: MotionCam-Pro-Free
+          path: MotionCam-Android/app/build/outputs/apk/debug/*.apk
