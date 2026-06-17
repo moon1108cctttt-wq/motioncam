@@ -15,10 +15,29 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Install LLVM Compiler
+      - name: Install LLVM Compiler and Dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y llvm clang build-essential
+
+      # خطوة سحرية لإجبار السيرفر على ربط مكتبة Halide بالترتيب الصحيح
+      - name: Hijack Compiler for Halide Link Order Fix
+        run: |
+          # اعتراض وتعديل سلوك g++
+          sudo mv /usr/bin/g++ /usr/bin/g++.real
+          sudo bash -c 'cat << "EOF" > /usr/bin/g++
+          #!/bin/bash
+          /usr/bin/g++.real "$@" -Wl,--start-group -lHalide -lpthread -ldl -lz -lm -Wl,--end-group
+          EOF'
+          sudo chmod +x /usr/bin/g++
+
+          # اعتراض وتعديل سلوك clang++ (للاحتياط)
+          sudo mv /usr/bin/clang++ /usr/bin/clang++.real || true
+          sudo bash -c 'cat << "EOF" > /usr/bin/clang++
+          #!/bin/bash
+          /usr/bin/clang++.real "$@" -Wl,--start-group -lHalide -lpthread -ldl -lz -lm -Wl,--end-group
+          EOF'
+          sudo chmod +x /usr/bin/clang++ || true
 
       - name: Run MotionCam Setup
         run: |
