@@ -24,8 +24,8 @@ jobs:
         run: |
           export ANDROID_NDK=$ANDROID_NDK_HOME
           export LLVM_DIR=/usr
-          chmod +x ./setup.sh
-          ./setup.sh
+          chmod +x ./setupenv.sh
+          ./setupenv.sh
 
       - name: Build APK with Gradle
         run: |
