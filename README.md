@@ -88,3 +88,4 @@ After setting up the environment, open the project MotionCam-Android with Androi
 ### Generating code
 
 MotionCam uses [Halide](https://github.com/halide/Halide) to generate the code for most of its algorithms. The generators can be found in ```libMotionCam/generators```. If you make any changes to the generator sources, use the script ```generate.sh``` to regenerate them.
+ 
